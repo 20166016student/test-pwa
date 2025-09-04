@@ -9,6 +9,7 @@
     "theme_color": "#A2F5FE",
     "description": "A simple countdown app with offline support.",
     "lang": "vi-VN",
+    "version": "1.0.0",
     "icons": [
         {
             "src": "images/icon-192x192.png",
