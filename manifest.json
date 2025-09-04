@@ -5,7 +5,7 @@
     "scope": "/test-pwa/",
     "display": "standalone",
     "orientation": "portrait",
-    "background_color": "#ffffff",
+    "background_color": "#A2F5FE",
     "theme_color": "#A2F5FE",
     "description": "A simple countdown app with offline support.",
     "lang": "vi-VN",
