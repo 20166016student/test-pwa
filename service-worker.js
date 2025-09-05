@@ -1,12 +1,12 @@
 const CACHE_NAME = 'pwa-demo-cache-v1';
 const urlsToCache = [
-    '/',
-    '/index.html',
-    '/css/style.css',
-    '/js/app.js',
-    '/images/icon-192x192.png',
-    '/images/icon-512x512.png',
-    '/manifest.json'
+    './',
+    './index.html',
+    './css/style.css',
+    './js/app.js',
+    './images/icon-192x192.png',
+    './images/icon-512x512.png',
+    './manifest.json'
 ];
 
 // Sự kiện install: Cache các tài nguyên cơ bản
