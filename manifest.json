@@ -1,7 +1,8 @@
 {
     "name": "PWA Countdown App",
     "short_name": "Countdown",
-    "start_url": "/test-pwa/index.html",
+    "start_url": "./index.html",
+    "scope": "./",
     "display": "standalone",
     "orientation": "portrait",
     "background_color": "#A2F5FE",
