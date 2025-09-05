@@ -1,5 +1,5 @@
 {
-    "name": "PWA Countdown App",
+    "name": "PWA Countdown",
     "short_name": "Countdown",
     "start_url": "./index.html",
     "scope": "./",
@@ -9,8 +9,6 @@
     "theme_color": "#00789B",
     "description": "A simple countdown app with offline support.",
     "lang": "vi-VN",
-    "version": "1.0.0",
-    "ver": "1.0.0.1",
     "icons": [
         {
             "src": "./images/icon-192x192.png",
@@ -22,7 +20,7 @@
             "src": "./images/icon-512x512.png",
             "sizes": "512x512",
             "type": "image/png",
-            "purpose": "any"
+            "purpose": "any maskable"
         }
     ]
 }
