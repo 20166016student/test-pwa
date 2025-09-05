@@ -61,3 +61,22 @@ self.addEventListener('activate', event => {
     );
     self.clients.claim(); // Đảm bảo Service Worker kiểm soát tất cả các tab
 });
+
+self.addEventListener('message', async event => {
+    if (event.data && event.data.type === 'CHECK_FOR_UPDATE') {
+        const response = await fetch('./manifest.json');
+        const newManifest = await response.json();
+
+        const cachedManifest = await caches.match('./manifest.json').then(res => res ? res.json() : null);
+
+        if (cachedManifest && cachedManifest.ver !== newManifest.ver) {
+            console.log('New version detected:', newManifest.ver);
+            await caches.delete(CACHE_NAME);
+            const cache = await caches.open(CACHE_NAME);
+            await cache.addAll(urlsToCache);
+            console.log('Cache updated with new version.');
+        } else {
+            console.log('No new version detected.');
+        }
+    }
+});
