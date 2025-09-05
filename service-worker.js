@@ -6,46 +6,58 @@ const urlsToCache = [
     '/js/app.js',
     '/images/icon-192x192.png',
     '/images/icon-512x512.png',
-    '/manifest.json' 
+    '/manifest.json'
 ];
 
-// Hàm kiểm tra phiên bản trong manifest.json
-async function checkVersionAndUpdateCache() {
-    const response = await fetch('/manifest.json');
-    const manifest = await response.json();
-    const currentVersion = manifest.version;
-
-    const storedVersion = await caches.match('/manifest.json').then(res => {
-        return res ? res.json().then(data => data.version) : null;
-    });
-
-    if (storedVersion !== currentVersion) {
-        console.log(`Version changed: ${storedVersion} -> ${currentVersion}`);
-        await caches.delete(CACHE_NAME); // Xóa cache cũ
-        const cache = await caches.open(CACHE_NAME);
-        await cache.addAll(urlsToCache); // Tải lại toàn bộ file mới
-    }
-}
-
+// Sự kiện install: Cache các tài nguyên cơ bản
 self.addEventListener('install', event => {
+    self.skipWaiting(); // Kích hoạt ngay Service Worker mới
     event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then(cache => {
-                console.log('Opened cache');
-                return cache.addAll(urlsToCache);
-            })
+        caches.open(CACHE_NAME).then(cache => {
+            console.log('Opened cache');
+            return cache.addAll(urlsToCache);
+        })
     );
 });
 
-self.addEventListener('activate', event => {
-    event.waitUntil(checkVersionAndUpdateCache());
-});
-
+// Sự kiện fetch: Trả về tài nguyên từ cache hoặc tải từ mạng
 self.addEventListener('fetch', event => {
     event.respondWith(
-        caches.match(event.request)
-            .then(response => {
-                return response || fetch(event.request);
-            })
+        caches.match(event.request).then(response => {
+            if (response) {
+                // Gửi thông tin cache hit đến UI
+                self.clients.matchAll().then(clients => {
+                    clients.forEach(client => {
+                        client.postMessage({ type: 'CACHE_HIT', url: event.request.url });
+                    });
+                });
+                return response;
+            }
+            return fetch(event.request).then(networkResponse => {
+                // Gửi thông tin network fetch đến UI
+                self.clients.matchAll().then(clients => {
+                    clients.forEach(client => {
+                        client.postMessage({ type: 'NETWORK_FETCH', url: event.request.url });
+                    });
+                });
+                return networkResponse;
+            });
+        })
     );
+});
+
+// Sự kiện activate: Xóa cache cũ nếu cần thiết
+self.addEventListener('activate', event => {
+    event.waitUntil(
+        caches.keys().then(cacheNames => {
+            return Promise.all(
+                cacheNames.map(cacheName => {
+                    if (cacheName !== CACHE_NAME) {
+                        return caches.delete(cacheName);
+                    }
+                })
+            );
+        })
+    );
+    self.clients.claim(); // Đảm bảo Service Worker kiểm soát tất cả các tab
 });
